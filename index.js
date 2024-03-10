@@ -49,4 +49,3 @@ app.use(
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
-console.log('berjalan');
