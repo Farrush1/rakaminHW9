@@ -129,20 +129,46 @@ const bodyParser = require('body-parser');
 const pool = require('../queries.js');
 const { authentication } = require('../middlewares/auth.js');
 
-router.get('/', authentication, function (req, res, next) {
+// router.get('/', authentication, function (req, res, next) {
+//   pool.query(
+//     `SELECT * FROM movies ${
+//       req.query.limit ? 'LIMIT ' + req.query.limit : ''
+//     } `,
+//     (error, results) => {
+//       if (error) {
+//         throw error;
+//       }
+//       res.json(results.rows);
+//     }
+//   );
+// });
+router.get('/', (req, res) => {
+  const limit = req.query.limit || 10;
+  const offset = req.query.offset || 0;
+
   pool.query(
-    `SELECT * FROM movies ${
-      req.query.limit ? 'LIMIT ' + req.query.limit : ''
-    } `,
-    (error, results) => {
-      if (error) {
-        throw error;
+    `SELECT * FROM movies LIMIT ${limit} OFFSET ${offset}`,
+    (err, result) => {
+      if (err) {
+        throw err;
       }
-      res.json(results.rows);
+      res.status(200).json(result.rows);
     }
   );
 });
 
+router.get('/', function (req, res) {
+  pool.query(
+    `
+    SELECT * FROM movies ${req.query.limit ? 'limit' + req.query.limit : '10'}`,
+    (err, result) => {
+      if (err) {
+        throw err;
+      }
+      res.json(result.rows);
+    }
+  );
+});
 router.get('/:id', function (req, res) {
   pool.query(
     `SELECT * FROM movies WHERE id = ${req.params.id}`,
